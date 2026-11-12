@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Jurnal Semangat Maulia ✨ - 3D Interactive K-Pop Cinematic Book Edition">
+    <title>Jurnal Semangat Maulia ✨</title>
+
+    <!-- Google Fonts: Cinzel, Lora, Caveat, Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;800;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="borahae-room">
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="ink-rough" x="-5%" y="-5%" width="110%" height="110%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="7" result="n" />
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4" />
+            </filter>
+        </defs>
+    </svg>
+
+    <canvas id="particles" aria-hidden="true"></canvas>
+
+    <!-- Atmospheric Candlelight & Purple Starlight Overlay -->
+    <div class="candle-overlay" aria-hidden="true"></div>
+
+    <!-- Top Control Floating Bar -->
+    <header class="top-control-bar" role="banner">
+        <div class="control-container flex-between">
+            <div class="brand-badge flex-center gap-sm">
+                <span class="icon-sparkle">💜</span>
+                <span class="brand-title">Jurnal Semangat</span>
+                <span class="badge-kpop">BTS BORAHAE EDITION</span>
+            </div>
+            <div class="action-controls flex-center gap-sm">
+                <button class="btn-icon-glass" onclick="toggleCandlelight()" title="Atmosfer Lilin Ungu">
+                    <span>🕯️</span><span>Borahae Night</span>
+                </button>
+                <button class="btn-icon-glass" onclick="cycleAmbientAudio()">
+                    <span id="ambient-icon">🌧️</span><span id="ambient-text">Audio Latar</span>
+                </button>
+                <button id="toggle-cover-btn" class="btn-glass-gold hidden" onclick="closeBookCover()">
+                    📕 Tutup Buku
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Book Viewport -->
+    <main class="book-viewport flex-center" role="main">
+        <div id="book-3d-container" class="book-3d-volume cover-closed" tabIndex="0">
+
+            <!-- 3D K-Pop Velvet Cover -->
+            <div id="book-cover" class="book-cover-3d flex-col-between" onclick="openBookCover()" role="button">
+                <div class="brass-corner corner-tl"></div>
+                <div class="brass-corner corner-tr"></div>
+                <div class="brass-corner corner-bl"></div>
+                <div class="brass-corner corner-br"></div>
+                <div class="leather-grain-overlay"></div>
+
+                <div class="cover-header text-center">
+                    <div class="gold-foil-emblem flex-center" id="gold-foil-crest">
+                        <span class="crest-icon">💜</span>
+                    </div>
+                    <span class="gold-foil-subtext">UNAIR X BTS ARMY</span>
+                </div>
+
+                <div class="cover-title-box text-center">
+                    <span class="ornament-top">✦</span>
+                    <h1 class="gold-embossed-title">Jurnal Semangat<br><span class="title-highlight">Maulia</span></h1>
+                    <div class="embossed-divider"></div>
+                    <p class="cover-subtitle">"Catatan Perjalanan"</p>
+                    <span class="ornament-bottom">✦</span>
+                </div>
+
+                <div class="cover-footer text-center">
+                    <div class="btn-open-journal flex-center gap-sm">
+                        <span>📖 BUKA JURNAL</span>
+                        <span class="arrow-pulse">➔</span>
+                    </div>
+                    <p class="touch-hint">Ketuk sampul beludru ungu untuk membuka mahakarya</p>
+                </div>
+            </div>
+
+            <!-- Interior Clean Pages (Tanpa Garis Tengah / Spine Meleset) -->
+            <div id="pages-wrapper" class="pages-wrapper flex-col-between">
+                <div class="ribbon-bookmark flex-col-center">
+                    <span class="ribbon-gold-icon">💜</span>
+                </div>
+
+                <!-- PAGE MESH CONTAINER -->
+                <div id="page-mesh-stage" class="page-mesh-stage">
+
+                    <!-- ========================================================== -->
+                    <!-- HALAMAN 1: DAFTAR ISI KHUSUS                               -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-1" class="chapter-page page-active">
+                        <div class="page-paper-texture"></div>
+
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <span class="badge-parchment">📚 DAFTAR ISI JURNAL</span>
+                                <h2 class="chapter-heading">Daftar Bab Mahakarya <span
+                                        class="gold-text-glow">Maulia</span>
+                                </h2>
+                                <div class="ornament-line">💜 ✦ 💜</div>
+                            </header>
+                        </div>
+                        <div class="page-right">
+
+                            <div class="toc-container">
+                                <ul class="toc-list">
+                                    <li onclick="goToChapter(2)" class="toc-item flex-between">
+                                        <span class="toc-title">📍 Bab 1: Catatan Spesial</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 1</span>
+                                    </li>
+                                    <li onclick="goToChapter(3)" class="toc-item flex-between">
+                                        <span class="toc-title">💌 Bab 2: Surat Rahasia</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 2</span>
+                                    </li>
+                                    <li onclick="goToChapter(4)" class="toc-item flex-between">
+                                        <span class="toc-title">🐾 Bab 3: Neko & Café Serenity</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 3</span>
+                                    </li>
+                                    <li onclick="goToChapter(5)" class="toc-item flex-between">
+                                        <span class="toc-title">💡 Bab 4: Kartu Pertolongan Pertama</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 4</span>
+                                    </li>
+                                    <li onclick="goToChapter(6)" class="toc-item flex-between">
+                                        <span class="toc-title">💜 Bab 5: Special Cheer Zone</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 5</span>
+                                    </li>
+                                    <li onclick="goToChapter(7)" class="toc-item flex-between">
+                                        <span class="toc-title">🫧 Bab 6: Ruang Pelepasan Penat</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 6</span>
+                                    </li>
+                                    <li onclick="goToChapter(8)" class="toc-item flex-between">
+                                        <span class="toc-title">🧭 Bab 7: Kompas Masa Menunggu</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 7</span>
+                                    </li>
+                                    <li onclick="goToChapter(9)" class="toc-item flex-between">
+                                        <span class="toc-title">🎓 Bab 8: Campus Quest</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 8</span>
+                                    </li>
+                                    <li onclick="goToChapter(10)" class="toc-item flex-between">
+                                        <span class="toc-title">🧪 Bab 9: BTS Magic Shop</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 9</span>
+                                    </li>
+                                    <li onclick="goToChapter(11)" class="toc-item flex-between">
+                                        <span class="toc-title">🌌 Bab 10: Epilog Konstelasi Impian</span>
+                                        <span class="toc-dots">................................</span>
+                                        <span class="toc-page"> Hal. 10</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- BAB 1: TARGET TKA & CATATAN SPESIAL                        -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-2" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+
+                        <div class="page-left">
+                            <header class="chapter-header">
+                                <span class="badge-parchment">🎓 Calon Mahasiswi Ilmu Ekonomi UNAIR</span>
+                                <h2 class="chapter-heading">Catatan Spesial Buat <span
+                                        class="gold-text-glow">Maulia</span>
+                                </h2>
+                                <div class="ornament-line">💜</div>
+                            </header>
+                        </div>
+                        <div class="page-right">
+
+                            <section class="chapter-body">
+                                <p class="narrative-text">
+                                    <span class="drop-cap">W</span>eb ini dibuat untuk mengingatkanmu bahwa
+                                    setiap buku memiliki babnya sendiri, begitu pula kehidupan. TKA hanyalah satu bab
+                                    kecil
+                                    dalam perjalananmu menuju impian
+                                    yang lebih besar.
+                                </p>
+
+                                <div class="vintage-paper mt-md">
+                                    <div class="card-stamp-overlay">On Process 🔥</div>
+                                    <span class="card-label">KARTU TANDA CALON MAHASISWA UNAIR</span>
+                                    <h3 class="card-target-date">Maulia Shulkhati</h3>
+                                    <p class="card-footer-quote mt-md">
+                                        "Dilarang panik dan menyerah. Pelan-pelan ajaa, untuk hasil serahkan serahkan
+                                        kepada Allah"
+                                    </p>
+                                </div>
+                            </section>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- BAB 2: SURAT RAHASIA (WAX SEAL & TEKS UTUH)                 -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-3" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <h2 class="chapter-heading">Surat Rahasia ✉️</h2>
+                                <p class="chapter-subtext">Ketuk segel lilin ungu di bawah untuk membuka surat</p>
+                                <div class="ornament-line">💜</div>
+                            </header>
+                        </div>
+                        <div class="page-right">
+
+                            <div class="envelope-stage flex-center">
+                                <div id="wax-envelope" class="wax-envelope" onclick="crackWaxSeal()">
+                                    <div id="wax-seal" class="wax-seal flex-center" role="button">
+                                        <span class="wax-emblem">💜</span>
+                                    </div>
+                                    <div class="envelope-top-flap"></div>
+                                    <div id="secret-letter-paper" class="secret-letter-paper">
+                                        <div class="letter-top flex-between">
+                                            <span class="letter-salutation">Untuk Maulia ✨</span>
+                                            <span class="letter-date-stamp">25 Okt 2026</span>
+                                        </div>
+                                        <div class="golden-ink-body">
+                                            <p style="--i:0"><span class="drop-cap">H</span>ai Maul! Sudah lama tidak
+                                                bertemu. Gimana
+                                                kabarmu? Happy? Sedih? Stres? Dan juga gimana kabar keluargamu? Semoga
+                                                aja
+                                                kamu dan keluargamu selalu sehat dan dilindungi Allah.</p>
+                                            <p style="--i:1">Habis ini kamu dan para agit mau TKA. Aku juga lihat di IG
+                                                ucup, kelas C udah
+                                                keliling kelas buat minta Doa ke Adkel. Kelas mu tidak bikin kayak
+                                                gitu??
+                                            </p>
+                                            <p style="--i:2">Hah... habis TKA ini kamu ujian, setelah itu wisuda
+                                                kelulusan.
+                                                Tidak kerasa ya sudah di penghujung cerita chapter prologue setelah itu
+                                                kamu bakal masuk
+                                                ke chapter pertama. Semakin dewasa waktu semakin cepat yaa.. Aku kangen
+                                                masa
+                                                sekolahh 😫</p>
+                                            <p style="--i:3">Soal TKA, bukan hanya TKA tapi yang lain juga seperti
+                                                lomba
+                                                dan lainnya.
+                                                Untuk hasil nya kamu jangan terlalu dipikirkan ya. Aku tau itu penting
+                                                bagi
+                                                kamu dan juga khawatir itu hal yang manusiawi. Tapi jangan terlalu
+                                                dipikirkan ya? kasihan diri kamu. Kata Dosen ku fokus pada hal yang bisa
+                                                kita kendalikan dan jangan terlalu dipikirkan pada hal yang tidak bisa
+                                                kita
+                                                kendalikan.</p>
+                                            <div class="letter-highlight-banner flex-center" style="--i:4">
+                                                <span class="golden-highlight-text">"Mangat Maul!" 😄✨</span>
+                                            </div>
+                                            <p style="--i:5">Jangan menyerah Maul. Kejar dan usahakan semua
+                                                mimpi atau cita-cita mu yang kau impikan dari kecil, yang pernah kamu
+                                                ceritakan ke orang dan bahkan impian yang tidak kamu ceritakan ke orang
+                                                lain.</p>
+                                            <blockquote class="letter-quote-callout" style="--i:6">
+                                                "Tuhan, semoga dunia si pembaca cantik yang suka begadang ini selalu
+                                                manis, seperti es krim kesukaannya. 😇"
+                                            </blockquote>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- BAB 3: NEKO & CAFÉ SERENITY                                -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-4" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <h2 class="chapter-heading">Neko & Café Serenity ☕</h2>
+                                <p class="chapter-subtext">Sentuh Neko untuk dengkuran taktil & pilih booster es krim
+                                </p>
+                                <div class="ornament-line">💜</div>
+                            </header>
+                        </div>
+                        <div class="page-right">
+                            <div class="neko-card-container vintage-paper flex-center-start gap-md"
+                                onclick="petNekoCat()">
+                                <div class="neko-avatar-wrapper flex-center">
+                                    <svg class="neko-svg" viewBox="0 0 64 64" aria-hidden="true">
+                                        <path d="M9 28 14 5l15 11zM55 28 50 5 35 16z" fill="#cdbbea" />
+                                        <path d="M15 12l2 8-5 3zM49 12l-2 8 5 3z" fill="#f4a9c8" />
+                                        <ellipse cx="32" cy="37" rx="24" ry="20" fill="#eee4fb" />
+                                        <g class="neko-eyes">
+                                            <ellipse cx="22.5" cy="35" rx="3.2" ry="4.4" fill="#2e1065" />
+                                            <ellipse cx="41.5" cy="35" rx="3.2" ry="4.4" fill="#2e1065" />
+                                            <circle cx="23.6" cy="33.4" r="1.1" fill="#fff" />
+                                            <circle cx="42.6" cy="33.4" r="1.1" fill="#fff" />
+                                        </g>
+                                        <circle cx="15" cy="42" r="3.5" fill="#f9b6d2" opacity=".7" />
+                                        <circle cx="49" cy="42" r="3.5" fill="#f9b6d2" opacity=".7" />
+                                        <path d="M30 41h4l-2 2.6z" fill="#e8799f" />
+                                        <path d="M32 43.6q-3 3.2-6.4 1.2M32 43.6q3 3.2 6.4 1.2" stroke="#2e1065"
+                                            fill="none" stroke-width="1.4" stroke-linecap="round" />
+                                        <path d="M8 38l9 2M8 44l9-1M56 38l-9 2M56 44l-9-1" stroke="#9d86c4"
+                                            stroke-width="1" stroke-linecap="round" />
+                                        <path d="M23 57l9-3.5 9 3.5-9 3.5z" fill="#7e22ce" />
+                                        <circle cx="32" cy="57" r="2.2" fill="#d4af37" />
+                                    </svg>
+                                </div>
+                                <div class="neko-speech-box">
+                                    <span class="speech-title">Neko Si Pustakawan</span>
+                                    <p id="neko-speech-text" class="speech-bubble">
+                                        "Purrr~ Ketuk aku kalau kamu butuh suara dengkuran hangat atau energi positif
+                                        belajar ya, Maul! 🐾"
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="icecream-grid-section mt-md">
+                                <h3 class="section-subheading text-center">Pembatas Buku Es Krim Booster 🍦</h3>
+                                <div class="icecream-grid mt-sm">
+                                    <button class="icecream-card"
+                                        onclick="openBoosterModal('Matcha', 'Nikmati prosesnya, Nikmati juga capeknya. Ubah nasib emang harus capek nggak sih? 😊', '🍵')">
+                                        <span class="ice-icon">🍨</span><span class="ice-title">Matcha</span>
+                                    </button>
+                                    <button class="icecream-card"
+                                        onclick="openBoosterModal('Strawberry', 'AYOO BERJUANGG MAUL. DEMI MASA DEPAN YANG KAU IMPIKANN. 🔥', '🍓')">
+                                        <span class="ice-icon">🍧</span><span class="ice-title">Strawberry</span>
+                                    </button>
+                                    <button class="icecream-card"
+                                        onclick="openBoosterModal('Vanilla', 'MANGAT! (Maul, Apapun Nanti Gangguannya, Atasin Terus!) ✨', '🍦')">
+                                        <span class="ice-icon">🍦</span><span class="ice-title">Vanilla</span>
+                                    </button>
+                                    <button class="icecream-card"
+                                        onclick="openBoosterModal('Choco', 'Jangan lupa Istirahat yaa??? Soalnya kalau kamu sakit kamu yang bakal kerepotan sendiri... Jadi, Jangan lupa istirahat ya walaupun itu cuma sebentar. 😁', '🍫')">
+                                        <span class="ice-icon">🍫</span><span class="ice-title">Choco</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- BAB 4: KARTU PERTOLONGAN PERTAMA                           -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-5" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <h2 class="chapter-heading">Kartu Pertolongan Pertama 💡</h2>
+                                <p class="chapter-subtext">Acak & tarik kartu pertolongan pertama saat cemas atau lelah
+                                </p>
+                                <div class="ornament-line">💜</div>
+                            </header>
+
+                            <div class="deck-controls flex-center mb-md">
+                                <button class="btn-gold-action" onclick="shuffleCardDeck()">🂠 Acak Ulang Deck Kartu
+                                    (Shuffle)</button>
+                            </div>
+                        </div>
+                        <div class="page-right">
+                            <div class="card-deck-grid">
+                                <div class="card-3d-wrapper" onclick="flipAffirmationCard(this)">
+                                    <div class="card-3d-inner">
+                                        <div class="card-face card-front flex-col-center">
+                                            <span class="card-symbol">😰</span>
+                                            <h3>Kalau Lagi Cemas</h3>
+                                            <small>Ketuk untuk Balik</small>
+                                        </div>
+                                        <div class="card-face card-back flex-col-center">
+                                            <p class="card-message">"Cemas itu wajar kok. Tapi jangan sampai berlebihan
+                                                yaa.
+                                                Cintai dirimu~~ Jangan ovt tiap hari~~"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-3d-wrapper" onclick="flipAffirmationCard(this)">
+                                    <div class="card-3d-inner">
+                                        <div class="card-face card-front flex-col-center">
+                                            <span class="card-symbol">😴</span>
+                                            <h3>Kalau Lagi Lelah</h3>
+                                            <small>Ketuk untuk Balik</small>
+                                        </div>
+                                        <div class="card-face card-back flex-col-center">
+                                            <p class="card-message">"Ayoo kita istirahatt, kamu bisa rebahan sebentar,
+                                                bisa
+                                                stretching,
+                                                sama jgn lupa minum air putihnya yaa."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-3d-wrapper" onclick="flipAffirmationCard(this)">
+                                    <div class="card-3d-inner">
+                                        <div class="card-face card-front flex-col-center">
+                                            <span class="card-symbol">😮‍💨</span>
+                                            <h3>Kalau Patah Semangat</h3>
+                                            <small>Ketuk untuk Balik</small>
+                                        </div>
+                                        <div class="card-face card-back flex-col-center">
+                                            <p class="card-message">"Lagi patah semangat?? ayo aku semangatinn.
+                                                Semangat~
+                                                semangat~ Maul semangat~"</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- BAB 5: CHEER ZONE BTS V & POLAROID                         -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-6" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <div class="badge-purple-glow">💜 Special Cheer Zone for Maul</div>
+                                <h2 class="chapter-heading text-purple">Pesan Khusus dari V (Taehyung) 🌟</h2>
+                                <div class="ornament-line">💜</div>
+                            </header>
+
+                            <div class="neko-card-container theme-purple-card flex-center-start gap-md mb-md"
+                                onclick="petVHeart()" role="button" tabindex="0"
+                                aria-label="Ketuk Neko untuk pesan dari V">
+                                <div id="v-heart-avatar" class="neko-avatar-wrapper flex-center border-purple-glow">
+                                    <svg class="neko-svg v-heart" viewBox="0 0 64 64" aria-hidden="true">
+                                        <path d="M9 28 14 5l15 11zM55 28 50 5 35 16z" fill="#cdbbea" />
+                                        <path d="M15 12l2 8-5 3zM49 12l-2 8 5 3z" fill="#f4a9c8" />
+                                        <ellipse cx="32" cy="37" rx="24" ry="20" fill="#eee4fb" />
+                                        <g class="neko-eyes">
+                                            <ellipse cx="22.5" cy="35" rx="3.2" ry="4.4" fill="#2e1065" />
+                                            <ellipse cx="41.5" cy="35" rx="3.2" ry="4.4" fill="#2e1065" />
+                                            <circle cx="23.6" cy="33.4" r="1.1" fill="#fff" />
+                                            <circle cx="42.6" cy="33.4" r="1.1" fill="#fff" />
+                                        </g>
+                                        <circle cx="15" cy="42" r="3.5" fill="#f9b6d2" opacity=".7" />
+                                        <circle cx="49" cy="42" r="3.5" fill="#f9b6d2" opacity=".7" />
+                                        <path d="M30 41h4l-2 2.6z" fill="#e8799f" />
+                                        <path d="M32 43.6q-3 3.2-6.4 1.2M32 43.6q3 3.2 6.4 1.2" stroke="#2e1065"
+                                            fill="none" stroke-width="1.4" stroke-linecap="round" />
+                                        <path d="M8 38l9 2M8 44l9-1M56 38l-9 2M56 44l-9-1" stroke="#9d86c4"
+                                            stroke-width="1" stroke-linecap="round" />
+                                        <path d="M23 57l9-3.5 9 3.5-9 3.5z" fill="#7e22ce" />
+                                        <circle cx="32" cy="57" r="2.2" fill="#d4af37" />
+                                    </svg>
+                                </div>
+                                <div class="neko-speech-box">
+                                    <span class="speech-title text-purple">BTS V Cheer Leader</span>
+                                    <p id="v-speech-text" class="speech-bubble text-purple">
+                                        "Taehyung aja bangga bangettt sama perjuanganmu Maul, meoww! ✨"
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="page-right">
+                            <div class="polaroid-gallery-grid">
+                                <div class="polaroid-card tilt-left"
+                                    onclick="openLightbox('v1.jpeg', 'Kim Taehyung - Always Support You ✨')">
+                                    <div class="polaroid-photo-frame">
+                                        <img src="v1.jpeg" alt="Kim Taehyung"
+                                            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'250\' fill=\'%233b0764\'><text x=\'50%\' y=\'50%\' fill=\'%23c084fc\' text-anchor=\'middle\'>Taehyung 💜</text></svg>'">
+                                    </div>
+                                    <span class="polaroid-caption">Kim Taehyung ✨</span>
+                                </div>
+                                <div class="polaroid-card tilt-right"
+                                    onclick="openLightbox('v2.jpeg', 'Borahea Maul! - Energi Positif TKA 💜')">
+                                    <div class="polaroid-photo-frame">
+                                        <img src="v2.jpeg" alt="V Cheer"
+                                            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'250\' fill=\'%233b0764\'><text x=\'50%\' y=\'50%\' fill=\'%23c084fc\' text-anchor=\'middle\'>Borahea 💜</text></svg>'">
+                                    </div>
+                                    <span class="polaroid-caption">Borahea Maul! 💜</span>
+                                </div>
+                                <div class="polaroid-card tilt-left-subtle"
+                                    onclick="openLightbox('v3.jpeg', 'Target Impian: FEB Universitas Airlangga 🎓')">
+                                    <div class="polaroid-photo-frame">
+                                        <img src="v3.jpeg" alt="Target"
+                                            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'250\' fill=\'%233b0764\'><text x=\'50%\' y=\'50%\' fill=\'%23c084fc\' text-anchor=\'middle\'>FEB UNAIR 🎓</text></svg>'">
+                                    </div>
+                                    <span class="polaroid-caption">FEB UNAIR 🎓</span>
+                                </div>
+                                <div class="polaroid-card tilt-right-subtle"
+                                    onclick="openLightbox('v4.jpeg', 'Winter Bear V 🐻')">
+                                    <div class="polaroid-photo-frame">
+                                        <img src="v4.jpeg" alt="Winter Bear V 🐻"
+                                            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'250\' fill=\'%233b0764\'><text x=\'50%\' y=\'50%\' fill=\'%23c084fc\' text-anchor=\'middle\'>Winter Bear 🐻</text></svg>'">
+                                    </div>
+                                    <span class="polaroid-caption">Winter Bear V 🐻</span>
+                                </div>
+                                <div class="polaroid-card tilt-left"
+                                    onclick="openLightbox('v5.jpeg', 'Semangat TKA! 🌟')">
+                                    <div class="polaroid-photo-frame">
+                                        <img src="v5.jpeg" alt="Semangat TKA! 🌟"
+                                            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'250\' fill=\'%233b0764\'><text x=\'50%\' y=\'50%\' fill=\'%23c084fc\' text-anchor=\'middle\'>Semangat TKA 🌟</text></svg>'">
+                                    </div>
+                                    <span class="polaroid-caption">Semangat TKA! 🌟</span>
+                                </div>
+                                <div class="polaroid-card tilt-right"
+                                    onclick="openLightbox('v6.jpeg', 'Future Economics Student 📚')">
+                                    <div class="polaroid-photo-frame">
+                                        <img src="v6.jpeg" alt="Future Economics Student 📚"
+                                            onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'250\' fill=\'%233b0764\'><text x=\'50%\' y=\'50%\' fill=\'%23c084fc\' text-anchor=\'middle\'>Future Economics 📚</text></svg>'">
+                                    </div>
+                                    <span class="polaroid-caption">Future Economics Student 📚</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-md">
+                                <button class="btn-purple-balloon" onclick="launchPurpleBalloons()">🎈 Terbangkan Balon
+                                    Ungu
+                                    Borahe 💜</button>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- ========================================================== -->
+                    <!-- FASE 2 · BAB 6: POST-TKA DECOMPRESSION CHAMBER              -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-7" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <div class="badge-purple-glow">🫧 Bab 6 · Ruang Pelepasan Penat</div>
+                                <h2 class="chapter-heading text-purple">Post-TKA Decompression Chamber</h2>
+                                <div class="ornament-line">💜 ✦ 💜</div>
+                            </header>
+                            <p class="jm-lead">TKA sudah selesai, Maul. Tarik napas panjang… pecahkan gelembung sampai
+                                bahumu terasa ringan, lalu lepaskan satu beban lewat lentera doa. 🏮</p>
+                        </div>
+                        <div class="page-right">
+                            <div class="jm-panel jm-dark">
+                                <div class="flex-between jm-row"><span>🫧 Bubble Wrap</span><span id="bubble-count">0 /
+                                        24</span></div>
+                                <div class="jm-bar"><i id="bubble-bar"></i></div>
+                                <div id="bubble-grid" class="bubble-grid"></div>
+                                <p id="bubble-msg" class="jm-msg" aria-live="polite">Ketuk, atau geser kursor sambil
+                                    menekan, untuk memecahkan gelembung.</p>
+                                <div class="text-center"><button id="bubble-reset" class="jm-mini" type="button">↺ Tiup
+                                        ulang</button></div>
+                            </div>
+                            <div class="jm-panel jm-dark">
+                                <div class="flex-between jm-row"><span>🏮 Lentera Doa</span><span id="lantern-count">0
+                                        terbang</span></div>
+                                <div class="jm-inline">
+                                    <input id="lantern-input" class="jm-input" maxlength="22"
+                                        placeholder="Satu hal yang ingin dilepas…"
+                                        aria-label="Tulis satu hal yang ingin dilepaskan">
+                                    <button id="lantern-btn" class="btn-purple-balloon"
+                                        type="button">Terbangkann!</button>
+                                </div>
+                                <div id="lantern-sky" class="lantern-sky" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- FASE 2 · BAB 7: THE MINDFUL COMPASS & WAITING ROOM          -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-8" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <div class="badge-purple-glow">🧭 Bab 7 · Navigasi Masa Menunggu</div>
+                                <h2 class="chapter-heading text-purple">The Mindful Compass &amp; Waiting Room</h2>
+                                <div class="ornament-line">💜 ✦ 💜</div>
+                            </header>
+                            <p class="jm-lead">Menunggu pengumuman itu seperti berdiri di persimpangan. Putar kompasnya
+                                dan biarkan arah angin membisikkan satu pesan untukmu.</p>
+                            <p id="compass-found" class="jm-lead jm-found">0 / 8 arah ditemukan</p>
+                        </div>
+                        <div class="page-right">
+                            <div class="compass-stage">
+                                <div class="compass-body" id="compass-dial" role="button" tabindex="0"
+                                    aria-label="Putar kompas ketenangan">
+                                    <div class="compass-face" id="compass-face">
+                                        <div class="compass-needle" id="compass-needle"></div>
+                                        <div class="compass-hub"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center"><button id="compass-spin" class="btn-gold-action" type="button">🧭
+                                    Putar Kompas</button></div>
+                            <div id="compass-result" class="compass-result show" aria-live="polite">
+                                <h3>Belum ada arah…</h3>
+                                <p>Putar kompas, lalu tunggu jarumnya berhenti.</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- FASE 2 · BAB 8: CAMPUS QUEST SIMULATOR            -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-9" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <div class="badge-purple-glow">🎓 Bab 8 · Panduan MaBa</div>
+                                <h2 class="chapter-heading text-purple">Campus Quest Simulator</h2>
+                                <div class="ornament-line">💜 ✦ 💜</div>
+                            </header>
+                            <p class="jm-lead">Buku saku untuk camaba. Centang tiap poin yang sudah kamu pahami,
+                                sampai bar kesiapan penuh.</p>
+                            <div class="jm-panel jm-ivory nb-progress">
+                                <div class="flex-between jm-row"><span>Kesiapan Maba</span><span id="nb-count">0 /
+                                        12</span></div>
+                                <div class="jm-bar"><i id="nb-bar"></i></div>
+                                <p id="nb-msg" class="jm-msg" aria-live="polite"></p>
+                            </div>
+                        </div>
+                        <div class="page-right">
+                            <div id="campus-notebook" class="campus-notebook">
+                                <div class="nb-tabs" role="tablist" aria-label="Buku saku kampus">
+                                    <button class="nb-tab" role="tab" type="button" aria-selected="true" id="nb-tab-1"
+                                        aria-controls="nb-panel-1">📝 Perjalanan</button>
+                                    <button class="nb-tab" role="tab" type="button" aria-selected="false" tabindex="-1"
+                                        id="nb-tab-2" aria-controls="nb-panel-2">🧭 Persiapan</button>
+                                    <button class="nb-tab" role="tab" type="button" aria-selected="false" tabindex="-1"
+                                        id="nb-tab-3" aria-controls="nb-panel-3">✨ Wishlist Maba</button>
+                                </div>
+                                <div class="nb-sheet">
+                                    <section id="nb-panel-1" role="tabpanel" aria-labelledby="nb-tab-1">
+                                        <ul class="nb-list" data-key="perjalanan"
+                                            data-placeholder="Tambah perjalananmu selanjutnyaa…">
+                                            <li><b>TKA.</b></li>
+                                            <li><b>Ujian Tengah Semester.</b></li>
+                                            <li><b>Study Tour Kampus.</b></li>
+                                            <li><b>Ujian Praktek.</b></li>
+                                            <li><b>Ujian Akhir Semester.</b></li>
+                                            <li><b>Ujian Madrasah.</b></li>
+                                        </ul>
+                                    </section>
+                                    <section id="nb-panel-2" role="tabpanel" aria-labelledby="nb-tab-2" hidden>
+                                        <ul class="nb-list" data-key="persiapan"
+                                            data-placeholder="Tambah apa aja persiapanmuu">
+                                            <li>Belajar buat ujian dan lainnya.</li>
+                                            <li>Sholat wajib tepat waktu dan berdoa</li>
+                                        </ul>
+                                    </section>
+                                    <section id="nb-panel-3" role="tabpanel" aria-labelledby="nb-tab-3" hidden>
+                                        <ul class="nb-list" data-key="wishlist"
+                                            data-placeholder="Tambah wishlist mabamu…">
+                                            <li>Nyoba Ayam Malay di kampus PENS.</li>
+                                            <li>Mengeksplor tempat baru di kota baru.</li>
+                                        </ul>
+                                    </section>
+                                    <div class="nb-composer">
+                                        <div class="nb-toolbar" role="toolbar" aria-label="Format teks">
+                                            <button type="button" class="nb-fmt" data-fmt="**" title="Tebal (Ctrl+B)"
+                                                aria-label="Tebal"><b>B</b></button>
+                                            <button type="button" class="nb-fmt" data-fmt="*" title="Miring (Ctrl+I)"
+                                                aria-label="Miring"><i>I</i></button>
+                                            <button type="button" class="nb-fmt" data-fmt="==" title="Highlight"
+                                                aria-label="Highlight">✨</button>
+                                            <span class="nb-fmt-hint">**tebal** · *miring* · ==highlight==</span>
+                                            <button id="nb-reset" type="button" class="jm-mini jm-mini-dark nb-reset">↺
+                                                Bawaan</button>
+                                        </div>
+                                        <div class="jm-inline">
+                                            <input id="nb-input" class="jm-input jm-light" maxlength="100"
+                                                placeholder="Tambah item baru…" aria-label="Tambah item baru">
+                                            <button id="nb-add" class="jm-mini jm-mini-dark" type="button">+
+                                                Tambah</button>
+                                        </div>
+                                        <p id="nb-preview" class="nb-preview" aria-hidden="true" hidden></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- FASE 2 · BAB 9: BTS MAGIC SHOP                              -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-10" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <div class="badge-purple-glow">🧪 Bab 9 · Penukar Beban Jadi Semangat</div>
+                                <h2 class="chapter-heading text-purple">BTS Magic Shop: Potion &amp; Life Level-Up</h2>
+                                <div class="ornament-line">💜 ✦ 💜</div>
+                            </header>
+                            <p class="jm-lead">Selamat datang di toko ajaib. Pilih satu beban, masukkan ke kuali, dan
+                                ambil Potion yang menguatkanmu.</p>
+                            <div class="jm-panel jm-dark shop-stats">
+                                <div class="flex-between jm-row"><span>Statistik Mental</span><span id="shop-level">Lv.
+                                        1 · Murid Baru</span></div>
+                                <div id="shop-stats"></div>
+                            </div>
+                        </div>
+                        <div class="page-right">
+                            <div id="burden-shelf" class="burden-shelf"></div>
+                            <div class="text-center">
+                                <button id="brew-btn" class="btn-purple-balloon" type="button" disabled>⚗️ Tukar Jadi
+                                    Potion</button>
+                            </div>
+                            <div class="cauldron-zone">
+                                <div id="cauldron" class="cauldron" aria-hidden="true">🫕</div>
+                                <div id="potion-card" class="potion-card" aria-live="polite">
+                                    <p>Pilih satu beban di rak untuk mulai meracik.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- ========================================================== -->
+                    <!-- FASE 2 · BAB 10: EPILOGUE, CONSTELLATION OF FUTURE DREAMS   -->
+                    <!-- ========================================================== -->
+                    <article id="page-chapter-11" class="chapter-page hidden-page">
+                        <div class="page-paper-texture"></div>
+                        <div class="page-left">
+                            <header class="chapter-header text-center">
+                                <div class="badge-purple-glow">🌌 Bab 10 · Epilog</div>
+                                <h2 class="chapter-heading text-purple">Constellation of Future Dreams</h2>
+                                <div class="ornament-line">💜 ✦ 💜</div>
+                            </header>
+                            <p class="jm-lead">Setiap impian adalah bintang. Hubungkan satu per satu, dari bintang yang
+                                berdenyut, dan lihat bentuk masa depanmu.</p>
+                        </div>
+                        <div class="page-right">
+                            <div class="jm-panel jm-dark">
+                                <div class="flex-between jm-row"><span id="const-count">0 / 8 bintang</span><button
+                                        id="const-reset" class="jm-mini" type="button">↺ Ulangi</button></div>
+                                <canvas id="constellation" tabindex="0"
+                                    aria-label="Kanvas konstelasi impian. Ketuk bintang yang berdenyut, atau tekan Enter, untuk menghubungkannya."></canvas>
+                                <p id="const-caption" class="jm-msg" aria-live="polite">Ketuk bintang yang berdenyut
+                                    untuk memulai ✨</p>
+                            </div>
+                            <div id="epilogue" class="epilogue" hidden>
+                                <p class="epilogue-text">Hei, Maulia.</p>
+                                <p class="epilogue-text">Tidak semua bintang menyala dalam semalam. Ada yang harus
+                                    menempuh perjalanan sangat jauh, melewati malam-malam yang sunyi, sebelum cahayanya
+                                    akhirnya sampai ke mata seseorang.</p>
+                                <p class="epilogue-text">Dan kamu sedang melakukan hal yang sama. Perlahan, kamu
+                                    menghubungkan bintang-bintang itu satu per satu, walau kadang
+                                    tanganmu gemetar dan langkahmu terasa berat.</p>
+                                <p class="epilogue-text">Apa pun hasilnya nanti, kamu sudah menjadi orang yang berani
+                                    mencoba. Itu bukan hal kecil, Maul. Itu sesuatu yang layak
+                                    dibanggakan.</p>
+                                <p class="epilogue-text">Kerja bagus, ya. 😊 *pat pat 🫳*</p>
+                                <div class="jm-inline">
+                                    <input id="capsule-input" class="jm-input jm-light" maxlength="80"
+                                        placeholder="Pesan untuk Maul 5 tahun lagi…"
+                                        aria-label="Pesan untuk dirimu lima tahun lagi">
+                                    <button id="capsule-btn" class="btn-gold-action" type="button">💊 Segel
+                                        Kapsul</button>
+                                </div>
+                                <p id="capsule-status" class="jm-msg jm-msg-ink" aria-live="polite"></p>
+                            </div>
+                        </div>
+                    </article>
+
+                </div>
+
+                <!-- Footer & Pagination -->
+                <footer class="page-footer flex-between">
+                    <span class="footer-edition">Jurnal Penyemangat Spesial Maulia (K-Pop Borahae Edition)</span>
+                    <div class="page-counter-group flex-center gap-xs">
+                        <button class="nav-arrow" onclick="prevPage()">◄</button>
+                        <span id="page-indicator" class="page-number-text">Halaman 1 dari 11</span>
+                        <button class="nav-arrow" onclick="nextPage()">►</button>
+                    </div>
+                </footer>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="booster-modal" class="modal-backdrop hidden-modal" role="dialog">
+        <div class="modal-glass-card text-center">
+            <button class="modal-close-btn" onclick="closeBoosterModal()">&times;</button>
+            <div id="modal-icon-badge" class="modal-icon-badge flex-center">🍨</div>
+            <h3 id="modal-title">Judul Booster</h3>
+            <p id="modal-body">Pesan penyemangat...</p>
+            <button class="btn-gold-action w-full mt-md" onclick="closeBoosterModal()">Makasih Pesannya! ✨</button>
+        </div>
+    </div>
+
+    <div id="lightbox-modal" class="modal-backdrop hidden-modal" onclick="closeLightbox()" role="dialog">
+        <div class="lightbox-content flex-col-center" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="Zoom" class="lightbox-photo">
+            <p id="lightbox-caption" class="lightbox-text">Caption</p>
+            <button class="btn-glass-gold mt-sm" onclick="closeLightbox()">Tutup Zoom</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
